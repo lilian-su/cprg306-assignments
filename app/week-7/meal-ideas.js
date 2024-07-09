@@ -6,6 +6,7 @@ export default function MealIdeas({ ingredient }) {
     const [meals, setMeals] = useState([]);
 
     async function fetchMealIdeas(ingredient) {
+        console.log(ingredient);
         try {
             const response = await fetch(
                 `https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`
@@ -15,6 +16,7 @@ export default function MealIdeas({ ingredient }) {
                 return [];
             }
             const data = await response.json();
+            console.log(data);
             return data.meals;
         } catch (error) {
             console.log(`Error: ${error.message}`);
@@ -24,6 +26,7 @@ export default function MealIdeas({ ingredient }) {
 
     async function loadMealIdeas() {
         const meals = await fetchMealIdeas(ingredient);
+        // console.log(meals);
         setMeals(meals || []);
     }
 
@@ -31,17 +34,20 @@ export default function MealIdeas({ ingredient }) {
         loadMealIdeas();
     }, [ingredient]);
 
-    return (
+   return (
         <div>
-            <h2>Meal Ideas</h2>
-            {meals ? (
-                <ul>
-                    {meals.map((meal) => (
-                        <li key={meal.idMeal}>
-                            <h3>{meal.strMeal}</h3>
-                        </li>
-                    ))}
-                </ul>
+            <h1>Meal Ideas</h1>
+            {meals && meals.length > 0 ? (
+                <div>
+                    <p>Here are some meal ideas for {ingredient}:</p>
+                    <ul>
+                        {meals.map((meal) => (
+                            <li key={meal.idMeal}>
+                                <h3>{meal.strMeal}</h3>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             ) : (
                 <p>No meal ideas found.</p>
             )}

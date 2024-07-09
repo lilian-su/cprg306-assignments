@@ -1,7 +1,6 @@
 "use client";
-
-import { useState } from 'react';
 import Item from './item.js';
+import { useState } from 'react';
 
 export default function ItemList({ items = [], onItemSelect }) {
     let itemArray = items.map((item) => ({ ...item }));
@@ -37,14 +36,15 @@ export default function ItemList({ items = [], onItemSelect }) {
             </section>
             <section className='grid grid-cols-1 gap-4'>
                 {itemArray.map((item) => (
-                    <div
-                        key={item.name}
-                        className="p-2 my-4 bg-cyan-500 border-2 border-amber-900 w-80"
-                        onClick={() => onItemSelect(item)}
-                    >
-                        <h3 className="text-2xl">{item.name}</h3>
-                        <p>Buy {item.quantity} in {item.category}</p>
-                    </div>
+                    // <div
+                    //     key={item.name}
+                    //     className="p-2 my-4 bg-cyan-500 border-2 border-amber-900 w-80"
+                    //     onClick={() => onItemSelect(item)}
+                    // >
+                    //     <h3 className="text-2xl">{item.name}</h3>
+                    //     <p>Buy {item.quantity} in {item.category}</p>
+                    // </div>
+                    <Item onSelect={onItemSelect} item={item} key={item.name} />
                 ))}
             </section>
         </div>
