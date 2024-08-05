@@ -4,33 +4,37 @@ import NewItem from "./new-item";
 import MealIdeas from "./meal-ideas";
 import { useState, useEffect } from 'react';
 import { getItems, addItem } from "../_services/shopping-list-services";
-import { useAuth } from "../_utils/auth"; // Assuming you have an auth context or hook
+import { useUserAuth } from "../_utils/auth-context";
 
 export default function Page() {
-    const { user } = useAuth(); // Getting the current user
     const [items, setItems] = useState([]);
     const [selectedItemName, setSelectedItemName] = useState("");
-
+    const { user } = useUserAuth(); 
+    // Function to load items from Firestore
     const loadItems = async () => {
-        if (user && user.uid) {
-            const fetchedItems = await getItems(user.uid);
-            setItems(fetchedItems);
+        try {
+            const itemsList = await getItems(user.uid);
+            setItems(itemsList);
+        } catch (error) {
+            console.error("Error loading items: ", error);
         }
     };
 
+    // useEffect hook to load items when the component mounts
     useEffect(() => {
-        loadItems();
-    }, [user]); // Dependency array includes user to reload items when user changes
+    if (user) {
+        loadItems(); // Just call loadItems without parameters
+    }
+}, [user]);
 
+
+    // Handle adding a new item
     const handleAddItem = async (newItem) => {
-        if (user && user.uid) {
-            try {
-                const newItemId = await addItem(user.uid, newItem);
-                const updatedItem = { id: newItemId, ...newItem };
-                setItems([...items, updatedItem]);
-            } catch (error) {
-                console.error("Error adding item:", error);
-            }
+        try {
+            const newItemId = await addItem(user.uid, newItem);
+            setItems([...items, { ...newItem, id: newItemId }]);
+        } catch (error) {
+            console.error("Error adding item: ", error);
         }
     };
 

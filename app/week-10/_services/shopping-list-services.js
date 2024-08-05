@@ -1,32 +1,33 @@
 import { db } from "../_utils/firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, addDoc, query } from "firebase/firestore";
 
 export async function addItem(userId, item) {
     try {
-        const itemsRef = collection(db, `users/${userId}/items`);
-        const docRef = await addDoc(itemsRef, item);
-        return docRef.id;
+        const newItemReference = collection(db, "users", userId, "items");
+        const newItemDoc = await addDoc(newItemReference, item);
+        return newItemDoc.id; // Return the new document ID
     } catch (error) {
-        console.error("Error adding item: ", error);
-        throw error; // Re-throw the error to be handled by the caller if needed
+        console.log(error);
+        throw error; // Ensure any error is propagated
     }
 }
 
 export async function getItems(userId) {
-    const items = [];
     try {
-        const itemsRef = collection(db, `users/${userId}/items`);
-        const q = query(itemsRef);
-        const querySnapshot = await getDocs(q);
-        
+        const collectionReference = collection(db, "users", userId, "items");
+        const itemQuery = query(collectionReference);
+        const querySnapshot = await getDocs(itemQuery);
+        let itemList = [];
         querySnapshot.forEach((doc) => {
-            items.push({
+            let thisList = {
                 id: doc.id,
-                ...doc.data(),
-            });
+                ...doc.data()
+            }
+            itemList.push(thisList);
         });
+        return itemList; // Return the list of items
     } catch (error) {
-        console.error("Error fetching items: ", error);
+        console.log(error);
+        throw error; // Ensure any error is propagated
     }
-    return items;
 }
